@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Layout } from "antd";
 import StoryForm from "../StoryForm";
 import StoryList from "../StoryList";
 import styles from "./styles";
+import { getStories } from "../../actions/stories";
 
 const { Sider, Content } = Layout;
 
 const Home = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getStories());
+  }, [dispatch]);
+  
   return (
     <Layout>
       <Sider style={styles.sider} width={400}>
