@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Story from "./models/storyContent.js";
+import Story from "../models/storyContent.js";
 
 const getStories = async (req, res) => {
   try {
@@ -10,10 +10,13 @@ const getStories = async (req, res) => {
   }
 };
 
-const createStory = (req, res) => {
+const createStory = async (req, res) => {
   const body = req.body;
 
-  const newStory = new Story({ ...body });
+  const newStory = new Story({
+    ...body,
+  });
+
   try {
     await newStory.save();
     res.status(201).json(newStory);
@@ -22,4 +25,48 @@ const createStory = (req, res) => {
   }
 };
 
-export { getStories, createStory };
+const updateStory = async (req, res) => {
+  const { id: _id } = req.params;
+
+  const story = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(404).send("This id doesnt belong to any story");
+  }
+
+  const updatedStory = await Story.findByIdAndUpdate(_id, story, { new: true });
+
+  res.json(updatedStory);
+};
+
+const deleteStory = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("This id doesnt belong to any story");
+  }
+
+  await Story.findByIdAndRemove(id);
+
+  res.json({ message: "Story deleted successfully" });
+};
+
+const likeStory = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("This id doesnt belong to any story");
+  }
+
+  const story = await Story.findById(id);
+
+  const updatedStory = await Story.findByIdAndUpdate(
+    id,
+    { likes: story.likes + 1 },
+    { new: true }
+  );
+
+  res.json(updatedStory);
+};
+
+export { getStories, createStory, updateStory, deleteStory, likeStory };

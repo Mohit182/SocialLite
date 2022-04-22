@@ -15,7 +15,7 @@ const styles = {
     zIndex: "1",
   },
   image: {
-    width: "45px",
+    width: '45px'
   },
   title: {
     color: "white",
